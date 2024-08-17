@@ -4,10 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using VectorSwizzling;
 
-public class DraggableObj : MonoBehaviour
+public class DraggableFloor : MonoBehaviour
 {
     private TowerManager towerManager;
     private new Camera camera;
+    private int floorID;
 
     // Start is called before the first frame update
     void Start()
@@ -21,17 +22,18 @@ public class DraggableObj : MonoBehaviour
 
         if (!Input.GetMouseButton(0)) 
         { 
-            towerManager.PlaceFloor(MousePos(), GetComponent<SpriteRenderer>().color);
+            towerManager.PlaceFloor(MousePos(), floorID);
 
             Destroy(gameObject);
         } 
     }
 
-    public void Setup(TowerManager tm, Camera cam, Color col)
+    public void Setup(TowerManager tm, Camera cam, int id)
     {
         towerManager = tm;
         camera = cam;
-        GetComponent<SpriteRenderer>().color = col;
+        floorID = id;
+        GetComponent<SpriteRenderer>().color = towerManager.GetFloorCol(floorID);
 
         towerManager.SetFloorMarker(true);
 
