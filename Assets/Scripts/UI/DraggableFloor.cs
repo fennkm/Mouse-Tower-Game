@@ -21,7 +21,7 @@ public class DraggableFloor : MonoBehaviour
         transform.position = MousePos();
 
         if (!Input.GetMouseButton(0)) 
-        { 
+        {
             towerManager.PlaceFloor(MousePos(), floorID);
 
             Destroy(gameObject);
@@ -33,7 +33,6 @@ public class DraggableFloor : MonoBehaviour
         towerManager = tm;
         camera = cam;
         floorID = id;
-        GetComponent<SpriteRenderer>().color = towerManager.GetFloorCol(floorID);
 
         towerManager.SetFloorMarker(true);
 

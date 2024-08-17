@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private new Camera camera;
     [SerializeField] private TowerManager towerManager;
     [SerializeField] private UIMeter[] meterSliders;
-    [SerializeField] private GameObject floorDraggable;
+    [SerializeField] private CurrencyLabel[] currencyLabels;
 
     // Start is called before the first frame update
     void Start()
@@ -26,9 +26,16 @@ public class UIManager : MonoBehaviour
         meterSliders[type].SetValues(value, rate);
     }
 
+    public void SetCurrencyValues(int type, int value)
+    {
+        currencyLabels[type].SetValue(value);
+    }
+
     public void ClickFloor(int floorID)
     {
-        DraggableFloor draggable = Instantiate(floorDraggable).GetComponent<DraggableFloor>();
+        GameObject obj = Instantiate(towerManager.GetFloorObj(floorID));
+
+        DraggableFloor draggable = obj.AddComponent<DraggableFloor>();
         draggable.Setup(towerManager, camera, floorID);
     }
 }
