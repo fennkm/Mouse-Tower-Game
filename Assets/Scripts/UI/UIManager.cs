@@ -26,9 +26,9 @@ public class UIManager : MonoBehaviour
         meterSliders[type].SetValues(value, rate);
     }
 
-    public void SetCurrencyValues(int type, int value)
+    public void SetCurrencyValues(int type, int value, int cap)
     {
-        currencyLabels[type].SetValue(value);
+        currencyLabels[type].SetValue(value, cap);
     }
 
     public void ClickFloor(int floorID)

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -19,9 +20,11 @@ public class TowerManager : MonoBehaviour
     [SerializeField] private CurrencyManager currencyManager;
     [SerializeField] private GameObject floorMarker;
     [SerializeField] private GameObject[] floorObjects;
+    [SerializeField] private TextMeshProUGUI altitudeLabel;
     [SerializeField] private float floorHeight;
     private float currentHeight = -3.5f;
     private float currentAngle;
+    private int floorCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +46,10 @@ public class TowerManager : MonoBehaviour
         if (!currencyManager.PurchaseFloor(floorID)) return;
 
         currentHeight += floorHeight;
+
+        floorCount++;
+
+        altitudeLabel.text = (floorCount * 10).ToString();
 
         GameObject newFloor = 
             Instantiate(
@@ -69,33 +76,36 @@ public class TowerManager : MonoBehaviour
                 meterManager.ChangeMeterRate(MeterManager.STRESS, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.TOOTHPICKS, 1f);
+                currencyManager.ChangeCurrencyCap(CurrencyManager.TOOTHPICKS, 5);
                 break;
             case TAILOR:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.01f);
                 meterManager.ChangeMeterRate(MeterManager.STRESS, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.STRING, 0.5f);
+                currencyManager.ChangeCurrencyCap(CurrencyManager.STRING, 3);
                 break;
             case JEWELLER:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.01f);
                 meterManager.ChangeMeterRate(MeterManager.STRESS, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.BUTTONS, 0.2f);
+                currencyManager.ChangeCurrencyCap(CurrencyManager.BUTTONS, 1);
                 break;
             case SPA:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.015f);
-                meterManager.ChangeMeterRate(MeterManager.STRESS, -0.05f);
-                meterManager.ChangeMeterVal(MeterManager.STRESS, -0.3f);
+                meterManager.ChangeMeterRate(MeterManager.STRESS, -0.025f);
+                meterManager.ChangeMeterVal(MeterManager.STRESS, -0.4f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.015f);
                 break;
             case BARRACKS:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.STRESS, 0.015f);
-                meterManager.ChangeMeterRate(MeterManager.DANGER, -0.05f);
-                meterManager.ChangeMeterVal(MeterManager.DANGER, -0.3f);
+                meterManager.ChangeMeterRate(MeterManager.DANGER, -0.025f);
+                meterManager.ChangeMeterVal(MeterManager.DANGER, -0.4f);
                 break;
             default:
-                throw new System.ArgumentOutOfRangeException(floorID + " is an invalid meter ID!");
+                throw new System.ArgumentOutOfRangeException(floorID + " is an invalid floor ID!");
         }
     }
 

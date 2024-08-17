@@ -13,24 +13,28 @@ public class CurrencyManager : MonoBehaviour
 
     [SerializeField] private UIManager uiManager;
     [SerializeField] private FloorButton[] floorButtons;
-    [SerializeField] private int[] startingCurrency = new int[3];
-    [SerializeField] private float[] startingProdution = new float[3];
+    [SerializeField] private float[] startingProduction = new float[3];
+    [SerializeField] private int[] floorStartingCaps = new int[3];
     [SerializeField] private String[] floorStartingCosts;
     [SerializeField] private String[] floorCostIncreases;
 
     private float[] currencyVals = { 0, 0, 0 };
     private float[] currencyRates = { 0, 0, 0 };
+    private int[] currencyCaps = { 0, 0, 0 };
     private float[,] floorCosts;
     private float[,] costIncreases;
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < currencyVals.Length; i++)
-            currencyVals[i] = startingCurrency[i];
+        for (int i = 0; i < currencyRates.Length; i++)
+            currencyRates[i] = startingProduction[i];
 
         for (int i = 0; i < currencyRates.Length; i++)
-            currencyRates[i] = startingProdution[i];
+        {
+            currencyCaps[i] = floorStartingCaps[i];
+            currencyVals[i] = floorStartingCaps[i];
+        }
 
         floorCosts = new float[floorStartingCosts.Length, 3];
         costIncreases = new float[floorStartingCosts.Length, 3];
@@ -56,9 +60,9 @@ public class CurrencyManager : MonoBehaviour
     {
         for (int i = 0; i < 3; i++)
         {
-            currencyVals[i] += currencyRates[i] * Time.deltaTime;
+            currencyVals[i] = Mathf.Min(currencyVals[i] + currencyRates[i] * Time.deltaTime, currencyCaps[i]);
 
-            uiManager.SetCurrencyValues(i, Mathf.FloorToInt(currencyVals[i]));
+            uiManager.SetCurrencyValues(i, Mathf.FloorToInt(currencyVals[i]), currencyCaps[i]);
         }
 
         for (int i = 0; i < floorButtons.Length; i++)
@@ -129,6 +133,16 @@ public class CurrencyManager : MonoBehaviour
     public void ChangeCurrencyVal(int type, float val)
     {
         currencyVals[type] = Mathf.Max(0, currencyVals[type] + val);
+    }
+
+    public void SetCurrencyCap(int type, int cap)
+    {
+        currencyCaps[type] = Mathf.Max(0, cap);
+    }
+
+    public void ChangeCurrencyCap(int type, int cap)
+    {
+        currencyCaps[type] = Mathf.Max(0, currencyCaps[type] + cap);
     }
 
     public float GetCurrencyVal(int type)
