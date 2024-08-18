@@ -35,6 +35,7 @@ public class DraggableFloor : MonoBehaviour
         floorID = id;
 
         towerManager.SetFloorMarker(true);
+        towerManager.TrackDraggable(gameObject);
 
         transform.position = MousePos();
     }

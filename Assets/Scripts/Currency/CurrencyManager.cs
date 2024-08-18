@@ -12,7 +12,6 @@ public class CurrencyManager : MonoBehaviour
     public const int BUTTONS = 2;
 
     [SerializeField] private UIManager uiManager;
-    [SerializeField] private FloorButton[] floorButtons;
     [SerializeField] private float[] startingProduction = new float[3];
     [SerializeField] private int[] floorStartingCaps = new int[3];
     [SerializeField] private String[] floorStartingCosts;
@@ -23,41 +22,24 @@ public class CurrencyManager : MonoBehaviour
     private int[] currencyCaps = { 0, 0, 0 };
     private float[,] floorCosts;
     private float[,] costIncreases;
+    private bool active;
+
+    void Awake()
+    {
+        SetActive(false);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < currencyRates.Length; i++)
-            currencyRates[i] = startingProduction[i];
-
-        for (int i = 0; i < currencyRates.Length; i++)
-        {
-            currencyCaps[i] = floorStartingCaps[i];
-            currencyVals[i] = floorStartingCaps[i];
-        }
-
-        floorCosts = new float[floorStartingCosts.Length, 3];
-        costIncreases = new float[floorStartingCosts.Length, 3];
-
-        for (int i = 0; i < floorStartingCosts.Length; i++)
-        {
-            String[] costStrings = floorStartingCosts[i].Split(char.Parse(","));
-
-            for (int j = 0; j < 3; j++)
-                floorCosts[i, j] = float.Parse(costStrings[j]);
-
-            UpdatePriceLabels(i);
-
-            costStrings = floorCostIncreases[i].Split(char.Parse(","));
-
-            for (int j = 0; j < 3; j++)
-                costIncreases[i, j] = float.Parse(costStrings[j]);
-        }
+        Reset();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!active) return;
+        
         for (int i = 0; i < 3; i++)
         {
             currencyVals[i] = Mathf.Min(currencyVals[i] + currencyRates[i] * Time.deltaTime, currencyCaps[i]);
@@ -65,18 +47,17 @@ public class CurrencyManager : MonoBehaviour
             uiManager.SetCurrencyValues(i, Mathf.FloorToInt(currencyVals[i]), currencyCaps[i]);
         }
 
-        for (int i = 0; i < floorButtons.Length; i++)
-        {
-            floorButtons[i].SetAffordances(GetAffordances(i));
-        }
+        for (int i = 0; i < floorCosts.GetLength(0); i++)
+            uiManager.SetFloorAffordances(i, GetAffordances(i));
     }
 
     private void UpdatePriceLabels(int floorID)
     {
-        floorButtons[floorID].SetCostLabels(
+        uiManager.UpdateFloorCostLabels(floorID, new int[] {
                 Mathf.FloorToInt(GetIntegerCost(floorID, 0)), 
                 Mathf.FloorToInt(GetIntegerCost(floorID, 1)), 
-                Mathf.FloorToInt(GetIntegerCost(floorID, 2)));
+                Mathf.FloorToInt(GetIntegerCost(floorID, 2))
+                });
     }
 
     private int GetIntegerCost(int floorID, int currency)
@@ -153,5 +134,40 @@ public class CurrencyManager : MonoBehaviour
     public float GetCurrencyRate(int type)
     {
         return currencyRates[type];
+    }
+
+    public void SetActive(bool isActive)
+    {
+        active = isActive;
+    }
+
+    public void Reset()
+    {
+        for (int i = 0; i < currencyRates.Length; i++)
+            currencyRates[i] = startingProduction[i];
+
+        for (int i = 0; i < currencyRates.Length; i++)
+        {
+            currencyCaps[i] = floorStartingCaps[i];
+            currencyVals[i] = floorStartingCaps[i];
+        }
+
+        floorCosts = new float[floorStartingCosts.Length, 3];
+        costIncreases = new float[floorStartingCosts.Length, 3];
+
+        for (int i = 0; i < floorStartingCosts.Length; i++)
+        {
+            String[] costStrings = floorStartingCosts[i].Split(char.Parse(","));
+
+            for (int j = 0; j < 3; j++)
+                floorCosts[i, j] = float.Parse(costStrings[j]);
+
+            UpdatePriceLabels(i);
+
+            costStrings = floorCostIncreases[i].Split(char.Parse(","));
+
+            for (int j = 0; j < 3; j++)
+                costIncreases[i, j] = float.Parse(costStrings[j]);
+        }
     }
 }

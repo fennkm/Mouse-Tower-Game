@@ -7,29 +7,33 @@ public class PowerupManager : MonoBehaviour
     public const int TETHERS = 0;
     public const int FLOWERS = 1;
     public const int BARBS = 2;
+    [SerializeField] UIManager uiManager;
     [SerializeField] MeterManager meterManager;
-    [SerializeField] PowerupLabel[] powerupLabels;
     [SerializeField] int[] startingPowerups = new int[3];
     private int[] powerupVals = { 0, 0, 0 };
+    private bool active;
+
+    void Awake()
+    {
+        SetActive(false);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < startingPowerups.Length; i++)
-            powerupVals[i] = startingPowerups[i];
-
-        UpdatePowerupLabels();
+        Reset();
     }
 
     private void UpdatePowerupLabels()
     {
-        for (int i = 0; i < powerupLabels.Length; i++)
-            powerupLabels[i].SetValue(powerupVals[i]);
+        for (int i = 0; i < powerupVals.Length; i++)
+            uiManager.SetPowerupValues(i, powerupVals[i]);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (!active) return;
     }
 
     public void UsePowerup(int powerupID)
@@ -54,6 +58,25 @@ public class PowerupManager : MonoBehaviour
             default:
                 throw new System.ArgumentOutOfRangeException(powerupID + " is an invalid powerup ID!");
         }
+
+        UpdatePowerupLabels();
+    }
+
+    public void AddPowerup(int powerupID, int count)
+    {
+        powerupVals[powerupID] += count;
+
+        UpdatePowerupLabels();
+    }
+    public void SetActive(bool isActive)
+    {
+        active = isActive;
+    }
+
+    public void Reset()
+    {
+        for (int i = 0; i < startingPowerups.Length; i++)
+            powerupVals[i] = startingPowerups[i];
 
         UpdatePowerupLabels();
     }

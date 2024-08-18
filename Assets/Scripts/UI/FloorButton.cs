@@ -9,6 +9,7 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Transform costPanel;
+    [SerializeField] private GameObject hightlight;
     [SerializeField] private int floorID;
     private TextMeshProUGUI[] costLabels;
     private Image[] costBoxes;
@@ -18,6 +19,8 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
     {
         costLabels = costPanel.GetComponentsInChildren<TextMeshProUGUI>();
         costBoxes = costPanel.GetComponentsInChildren<Image>();
+
+        hightlight.SetActive(false);
 
         SetButtonActive(false);
         for (int i = 0; i < 3; i++)
@@ -35,19 +38,23 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
         if (isActive) uiManager.ClickFloor(floorID);
     }
 
-    public void SetCostLabels(int toothpicks, int strings, int buttons)
+    public void SetCostLabels(int[] costs)
     {
-        costLabels[0].text = toothpicks.ToString();
-        costLabels[1].text = strings.ToString();
-        costLabels[2].text = buttons.ToString();
+        for (int i = 0; i < 3; i++)
+            costLabels[i].text = costs[i].ToString();
     }
 
     public void SetAffordances(bool[] affordances)
     {
         SetButtonActive(affordances[0] && affordances[1] && affordances[2]);
 
-        for (int i = 0; i < affordances.Length; i++)
+        for (int i = 0; i < 3; i++)
             SetCostLabelTint(i, affordances[i]);
+    }
+
+    public void SetHightlight(bool active)
+    {
+        hightlight.SetActive(active);
     }
 
     private void SetButtonActive(bool active)

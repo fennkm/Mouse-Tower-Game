@@ -11,15 +11,19 @@ public class MeterManager : MonoBehaviour
     [SerializeField] UIManager uiManager;
     private float[] meterRates = { 0f, 0f, 0f };
     private float[] meterVals = { 0f, 0f, 0f };
+    private bool active;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!active) return;
+
         for (int i = 0; i < 3; i++)
         {
             meterVals[i] = Mathf.Clamp01(meterVals[i] + meterRates[i] * Time.deltaTime);
@@ -57,5 +61,16 @@ public class MeterManager : MonoBehaviour
     public float GetMeterRate(int type)
     {
         return meterRates[type];
+    }
+
+    public void SetActive(bool isActive)
+    {
+        active = isActive;
+    }
+
+    public void Reset()
+    {
+        meterRates = new float[] { 0f, 0f, 0f };
+        meterVals = new float[] { 0f, 0f, 0f };
     }
 }

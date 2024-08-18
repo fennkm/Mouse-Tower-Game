@@ -9,14 +9,14 @@ using VectorSwizzling;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private float moveRate = .01f;
-
+    private Animator animator;
     private Coroutine moveAnimation;
     private bool cameraMoving;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -34,6 +34,11 @@ public class CameraController : MonoBehaviour
 
             moveAnimation = StartCoroutine(SmoothToHeight(newHeight));
         }
+    }
+
+    public void Screenshake()
+    {
+        animator.SetTrigger("ScreenShake");
     }
 
     IEnumerator SmoothToHeight(float height)
@@ -54,5 +59,10 @@ public class CameraController : MonoBehaviour
     private void SetHeight(float height)
     {
         transform.position = transform.position.x0z() + height._0x0();
+    }
+
+    public void Reset()
+    {
+        SetHeight(0);
     }
 }

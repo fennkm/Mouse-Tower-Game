@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 using VectorSwizzling;
 
 public class TowerManager : MonoBehaviour
@@ -16,20 +13,44 @@ public class TowerManager : MonoBehaviour
     public const int SPA = 5;
     public const int BARRACKS = 6;
     [SerializeField] private new CameraController camera;
+    [SerializeField] private UIManager uiManager;
     [SerializeField] private MeterManager meterManager;
     [SerializeField] private CurrencyManager currencyManager;
+    [SerializeField] private PowerupManager powerupManager;
+    [SerializeField] private QuestManager questManager;
     [SerializeField] private GameObject floorMarker;
+    [SerializeField] private Transform groundFloor;
     [SerializeField] private GameObject[] floorObjects;
-    [SerializeField] private TextMeshProUGUI altitudeLabel;
     [SerializeField] private float floorHeight;
-    private float currentHeight = -3.5f;
+    [SerializeField] private float floorWidth;
+    [SerializeField] private float cameraOffset;
+    [SerializeField] private float markerOffset;
+    private GameObject currentDraggable;
+    private float currentHeight;
     private float currentAngle;
-    private int floorCount = 0;
+    private int  floorCount;
+    private bool active;
+
+    void Awake()
+    {
+        SetActive(false);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        floorMarker.transform.position = (currentHeight + floorHeight)._0x0();
+        SetActive(true);
+        meterManager.SetActive(true);
+        currencyManager.SetActive(true);
+        powerupManager.SetActive(true);
+        questManager.SetActive(true);
+        GetComponent<Wobbleinator>().SetActive(true);
+
+        floorCount = 0;
+
+        currentHeight = groundFloor.position.y;
+
+        floorMarker.transform.localPosition = groundFloor.position + (floorHeight + markerOffset)._0x0();
 
         SetFloorMarker(false);
     }
@@ -37,19 +58,30 @@ public class TowerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!active) return;
+
+        for (int i = 0; i < 3; i++)
+            if (meterManager.GetMeterVal(i) >= 1)
+            {
+                LoseGame(i);
+                break;
+            }
     }
 
     public void PlaceFloor(Vector3 mousePos, int floorID)
     {
+        SetFloorMarker(false);
+        currentDraggable = null;
+
         if (!CheckFloorMarkerHitbox(mousePos)) return;
 
         if (!currencyManager.PurchaseFloor(floorID)) return;
 
+        uiManager.SetAltitudeLabel(floorCount);
+
         currentHeight += floorHeight;
 
         floorCount++;
-
-        altitudeLabel.text = (floorCount * 10).ToString();
 
         GameObject newFloor = 
             Instantiate(
@@ -58,9 +90,19 @@ public class TowerManager : MonoBehaviour
                 transform.localRotation, 
                 transform);
 
-        camera.MoveToHeight(currentHeight);
+        newFloor.GetComponent<SpriteRenderer>().sortingOrder = -floorCount;
 
-        floorMarker.transform.localPosition = (currentHeight + floorHeight)._0x0();
+        FloorSlider floorSlider = newFloor.AddComponent<FloorSlider>();
+
+        floorSlider.Setup(GetComponent<Wobbleinator>(), currentHeight);
+
+        camera.MoveToHeight(currentHeight + cameraOffset);
+        
+        floorMarker.transform.position += floorHeight._0x0();
+
+        questManager.BuyFloor(floorID);
+
+        camera.Screenshake();
 
         switch (floorID)
         {
@@ -109,6 +151,11 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+    public void TrackDraggable(GameObject draggable)
+    {
+        currentDraggable = draggable;
+    }
+
     public GameObject GetFloorObj(int id)
     {
         return floorObjects[id];
@@ -124,22 +171,66 @@ public class TowerManager : MonoBehaviour
         return currentHeight;
     }
 
-    public void SetAngle(float angle)
+    public void LoseGame(int lossType)
     {
-        currentAngle = angle;
+        SetActive(false);
+        meterManager.SetActive(false);
+        currencyManager.SetActive(false);
+        powerupManager.SetActive(false);
+        questManager.SetActive(false);
+        GetComponent<Wobbleinator>().SetActive(false);
+
+        SetFloorMarker(false);
+
+        if (currentDraggable != null)
+            Destroy(currentDraggable);
+
+        uiManager.ShowDeathScreen(lossType);
     }
 
-    public float GetAngle()
+    public void ResetGame()
     {
-        return currentAngle;
+        for (int i = 0; i < transform.childCount; i++)
+            if (!transform.GetChild(i).Equals(groundFloor))
+                Destroy(transform.GetChild(i).gameObject);
+
+        currentHeight = groundFloor.position.y;
+        floorMarker.transform.localPosition = groundFloor.position + (floorHeight + markerOffset)._0x0();
+
+        floorCount = 0;
+
+        SetFloorMarker(false);
+
+        meterManager.Reset();
+        currencyManager.Reset();
+        powerupManager.Reset();
+        questManager.Reset();
+        GetComponent<Wobbleinator>().Reset();
+
+        camera.Reset();
+
+        uiManager.SetAltitudeLabel(floorCount);
+        uiManager.ClearDeathScreen();
+
+        SetActive(true);
+        meterManager.SetActive(true);
+        currencyManager.SetActive(true);
+        powerupManager.SetActive(true);
+        questManager.SetActive(true);
+        GetComponent<Wobbleinator>().SetActive(true);
+    }
+
+    public void SetActive(bool isActive)
+    {
+        active = isActive;
     }
 
     bool CheckFloorMarkerHitbox(Vector3 pos)
     {
         Transform box = floorMarker.transform;
 
-        return  pos.y > (box.position.y - box.localScale.y) &&
-                pos.x < (box.position.x + box.localScale.x / 2) &&
-                pos.x > (box.position.x - box.localScale.x / 2);
+        return  pos.y > (box.position.y - floorHeight) &&
+                pos.x < (box.position.x + floorWidth / 2) &&
+                pos.x > (box.position.x - floorWidth / 2);
     }
 }
