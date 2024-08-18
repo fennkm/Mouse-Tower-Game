@@ -63,6 +63,7 @@ public class CameraController : MonoBehaviour
 
     public void Reset()
     {
+        StopAllCoroutines();
         SetHeight(0);
     }
 }

@@ -14,6 +14,7 @@ public class TowerManager : MonoBehaviour
     public const int BARRACKS = 6;
     [SerializeField] private new CameraController camera;
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private AudioManager audioManager;
     [SerializeField] private MeterManager meterManager;
     [SerializeField] private CurrencyManager currencyManager;
     [SerializeField] private PowerupManager powerupManager;
@@ -104,6 +105,8 @@ public class TowerManager : MonoBehaviour
 
         camera.Screenshake();
 
+        audioManager.PlaySFX("FloorPlace");
+
         switch (floorID)
         {
             case SCAFFOLDING:
@@ -112,6 +115,7 @@ public class TowerManager : MonoBehaviour
             case PENDULUM:
                 meterManager.SetMeterVal(MeterManager.INSTABILITY, 0);
                 meterManager.SetMeterRate(MeterManager.INSTABILITY, 0);
+                audioManager.PlaySFX("PendulumBell");
                 break;
             case WOODWORKER:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.01f);

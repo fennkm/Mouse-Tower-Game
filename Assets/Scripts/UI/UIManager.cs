@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private new Camera camera;
+    [SerializeField] private AudioManager audioManager;
     [SerializeField] private TowerManager towerManager;
     [SerializeField] private FloorButton[] floorButtons;
     [SerializeField] private UIMeter[] meterSliders;
@@ -80,6 +81,8 @@ public class UIManager : MonoBehaviour
 
         DraggableFloor draggable = obj.AddComponent<DraggableFloor>();
         draggable.Setup(towerManager, camera, floorID);
+
+        audioManager.PlaySFX("FloorPickup");
     }
 
     public void ShowDeathScreen(int deathType)

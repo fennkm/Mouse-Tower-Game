@@ -34,11 +34,7 @@ public class QuestManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!active) 
-        {
-            StopAllCoroutines();
-            return;
-        }
+        if (!active) return;
     }
 
     public void BuyFloor(int type)
@@ -80,6 +76,9 @@ public class QuestManager : MonoBehaviour
 
     public void SetActive(bool isActive)
     {
+        if (!isActive && questActive)
+            EndQuest();
+
         active = isActive;
     }
 
