@@ -17,8 +17,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private QuestBox questBox;
     [SerializeField] private StartMenu startMenu;
     [SerializeField] private SettingsMenu settingsMenu;
+    [SerializeField] private CreditsScreen creditsScreen;
     [SerializeField] private DeathScreen deathScreen;
     [SerializeField] private TextMeshProUGUI altitudeLabel;
+    [SerializeField] private GameObject uiBlocker;
 
     // Start is called before the first frame update
     void Start()
@@ -101,10 +103,16 @@ public class UIManager : MonoBehaviour
         startMenu.SetActive(active);
     }
 
+    public void SetUIBlocker(bool active)
+    {
+        uiBlocker.SetActive(active);
+    }
+
     public void ClearScreens()
     {
         deathScreen.ClearDeathScreen();
         startMenu.SetActive(false);
         settingsMenu.SetActive(false);
+        creditsScreen.SetActive(false);
     }
 }

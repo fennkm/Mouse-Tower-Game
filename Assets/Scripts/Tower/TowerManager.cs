@@ -28,6 +28,7 @@ public class TowerManager : MonoBehaviour
     [SerializeField] private float cameraOffset;
     [SerializeField] private float markerOffset;
     private GameObject currentDraggable;
+    private Queue<GameObject> recentFloors;
     private float currentHeight;
     private float currentAngle;
     private int  floorCount;
@@ -41,6 +42,8 @@ public class TowerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        recentFloors = new Queue<GameObject>();
+
         uiManager.SetStartScreen(true);
 
         audioManager.StartMenuMusic();
@@ -76,8 +79,6 @@ public class TowerManager : MonoBehaviour
 
         if (!currencyManager.PurchaseFloor(floorID)) return;
 
-        uiManager.SetAltitudeLabel(floorCount);
-
         currentHeight += floorHeight;
 
         floorCount++;
@@ -95,6 +96,11 @@ public class TowerManager : MonoBehaviour
 
         newFloor.GetComponent<FloorParticleController>().GoPoof();
 
+        recentFloors.Enqueue(newFloor);
+
+        if (recentFloors.Count > 3)
+            recentFloors.Dequeue();
+
         if (floorCount % 100 == 0)
         {
             newFloor.GetComponent<FloorParticleController>().GoSparkle();
@@ -104,6 +110,8 @@ public class TowerManager : MonoBehaviour
         camera.MoveToHeight(currentHeight + cameraOffset);
         
         floorMarker.transform.position += floorHeight._0x0();
+
+        uiManager.SetAltitudeLabel(floorCount);
 
         questManager.BuyFloor(floorID);
 
@@ -213,6 +221,8 @@ public class TowerManager : MonoBehaviour
 
         floorCount = 0;
 
+        recentFloors = new Queue<GameObject>();
+
         SetFloorMarker(false);
 
         meterManager.Reset();
@@ -269,6 +279,12 @@ public class TowerManager : MonoBehaviour
     public void SetActive(bool isActive)
     {
         active = isActive;
+    }
+
+    public void ApplyDecor(int type)
+    {
+        foreach (GameObject floor in recentFloors)
+            floor.GetComponent<FloorDecorController>().SetDecor(type);
     }
 
     bool CheckFloorMarkerHitbox(Vector3 pos)

@@ -8,6 +8,7 @@ public class PowerupManager : MonoBehaviour
     public const int FLOWERS = 1;
     public const int BARBS = 2;
     [SerializeField] UIManager uiManager;
+    [SerializeField] TowerManager towerManager;
     [SerializeField] AudioManager audioManager;
     [SerializeField] MeterManager meterManager;
     [SerializeField] int[] startingPowerups = new int[3];
@@ -63,6 +64,8 @@ public class PowerupManager : MonoBehaviour
                 throw new System.ArgumentOutOfRangeException(powerupID + " is an invalid powerup ID!");
         }
 
+        towerManager.ApplyDecor(powerupID);
+        
         UpdatePowerupLabels();
     }
 
