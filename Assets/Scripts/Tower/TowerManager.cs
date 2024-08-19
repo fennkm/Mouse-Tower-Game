@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using VectorSwizzling;
 
@@ -40,12 +41,9 @@ public class TowerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetActive(true);
-        meterManager.SetActive(true);
-        currencyManager.SetActive(true);
-        powerupManager.SetActive(true);
-        questManager.SetActive(true);
-        GetComponent<Wobbleinator>().SetActive(true);
+        uiManager.SetStartScreen(true);
+
+        audioManager.StartMenuMusic();
 
         floorCount = 0;
 
@@ -93,9 +91,15 @@ public class TowerManager : MonoBehaviour
 
         newFloor.GetComponent<SpriteRenderer>().sortingOrder = -floorCount;
 
-        FloorSlider floorSlider = newFloor.AddComponent<FloorSlider>();
+        newFloor.GetComponent<FloorSlider>().Setup(GetComponent<Wobbleinator>(), currentHeight);
 
-        floorSlider.Setup(GetComponent<Wobbleinator>(), currentHeight);
+        newFloor.GetComponent<FloorParticleController>().GoPoof();
+
+        if (floorCount % 100 == 0)
+        {
+            newFloor.GetComponent<FloorParticleController>().GoSparkle();
+            audioManager.PlaySFX("MilestoneChime");
+        }
 
         camera.MoveToHeight(currentHeight + cameraOffset);
         
@@ -123,6 +127,7 @@ public class TowerManager : MonoBehaviour
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.TOOTHPICKS, 1f);
                 currencyManager.ChangeCurrencyCap(CurrencyManager.TOOTHPICKS, 5);
+                audioManager.PlaySFX("WoodworkerSaw");
                 break;
             case TAILOR:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.01f);
@@ -130,6 +135,7 @@ public class TowerManager : MonoBehaviour
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.STRING, 0.5f);
                 currencyManager.ChangeCurrencyCap(CurrencyManager.STRING, 3);
+                audioManager.PlaySFX("TailorScissors");
                 break;
             case JEWELLER:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.01f);
@@ -137,18 +143,21 @@ public class TowerManager : MonoBehaviour
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.005f);
                 currencyManager.ChangeCurrencyRate(CurrencyManager.BUTTONS, 0.2f);
                 currencyManager.ChangeCurrencyCap(CurrencyManager.BUTTONS, 1);
+                audioManager.PlaySFX("JewellerHammer");
                 break;
             case SPA:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.STRESS, -0.025f);
                 meterManager.ChangeMeterVal(MeterManager.STRESS, -0.4f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, 0.015f);
+                audioManager.PlaySFX("SpaBubbles");
                 break;
             case BARRACKS:
                 meterManager.ChangeMeterRate(MeterManager.INSTABILITY, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.STRESS, 0.015f);
                 meterManager.ChangeMeterRate(MeterManager.DANGER, -0.025f);
                 meterManager.ChangeMeterVal(MeterManager.DANGER, -0.4f);
+                audioManager.PlaySFX("BarracksMarch");
                 break;
             default:
                 throw new System.ArgumentOutOfRangeException(floorID + " is an invalid floor ID!");
@@ -190,13 +199,14 @@ public class TowerManager : MonoBehaviour
             Destroy(currentDraggable);
 
         uiManager.ShowDeathScreen(lossType);
+
+        audioManager.FadeMusicOut();
     }
 
     public void ResetGame()
     {
         for (int i = 0; i < transform.childCount; i++)
-            if (!transform.GetChild(i).Equals(groundFloor))
-                Destroy(transform.GetChild(i).gameObject);
+            Destroy(transform.GetChild(i).gameObject);
 
         currentHeight = groundFloor.position.y;
         floorMarker.transform.localPosition = groundFloor.position + (floorHeight + markerOffset)._0x0();
@@ -214,7 +224,20 @@ public class TowerManager : MonoBehaviour
         camera.Reset();
 
         uiManager.SetAltitudeLabel(floorCount);
-        uiManager.ClearDeathScreen();
+    }
+
+    public void RestartGame()
+    {
+        ResetGame();
+
+        StartGame();
+    }
+
+    public void StartGame()
+    {
+        uiManager.ClearScreens();
+
+        audioManager.StartGameMusic();
 
         SetActive(true);
         meterManager.SetActive(true);
@@ -222,6 +245,25 @@ public class TowerManager : MonoBehaviour
         powerupManager.SetActive(true);
         questManager.SetActive(true);
         GetComponent<Wobbleinator>().SetActive(true);
+    }
+
+    public void DisplayMenu()
+    {
+        audioManager.StartMenuMusic();
+
+        uiManager.ClearScreens();
+        uiManager.SetStartScreen(true);
+
+        ResetGame();
+    }
+
+    public void QuitGame()
+    {
+        #if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+        #else
+            Application.Quit();
+        #endif
     }
 
     public void SetActive(bool isActive)

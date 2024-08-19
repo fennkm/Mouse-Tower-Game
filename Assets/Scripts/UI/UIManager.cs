@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,14 +15,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CurrencyLabel[] currencyLabels;
     [SerializeField] private PowerupLabel[] powerupLabels;
     [SerializeField] private QuestBox questBox;
+    [SerializeField] private StartMenu startMenu;
+    [SerializeField] private SettingsMenu settingsMenu;
     [SerializeField] private DeathScreen deathScreen;
     [SerializeField] private TextMeshProUGUI altitudeLabel;
-    [SerializeField] private GameObject uiBlocker;
 
     // Start is called before the first frame update
     void Start()
     {
-        uiBlocker.SetActive(false);
     }
 
     // Update is called once per frame
@@ -87,15 +88,23 @@ public class UIManager : MonoBehaviour
 
     public void ShowDeathScreen(int deathType)
     {
-        uiBlocker.SetActive(true);
-
         deathScreen.SetDeathScreen(deathType);
     }
 
     public void ClearDeathScreen()
     {
-        uiBlocker.SetActive(false);
-
         deathScreen.ClearDeathScreen();
+    }
+
+    public void SetStartScreen(bool active)
+    {
+        startMenu.SetActive(active);
+    }
+
+    public void ClearScreens()
+    {
+        deathScreen.ClearDeathScreen();
+        startMenu.SetActive(false);
+        settingsMenu.SetActive(false);
     }
 }

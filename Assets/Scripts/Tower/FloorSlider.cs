@@ -8,16 +8,19 @@ public class FloorSlider : MonoBehaviour
 {
     private Wobbleinator wobbleinator;
     private float height;
+    private bool active;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        active = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!active) return;
+
         if (height > wobbleinator.GetPivotHeight())
         {
             float h =  
@@ -28,9 +31,8 @@ public class FloorSlider : MonoBehaviour
             float d = wobbleinator.GetFloorSlideDist() * wobbleinator.GetSinTilt();
 
             float x = -d * h * h;
-            float y = x * wobbleinator.GetTanTilt();
 
-            transform.localPosition = height._0x0() + x.x00();// + y._0x0();
+            transform.localPosition = height._0x0() + x.x00();
         }
         else
             transform.localPosition = height._0x0();
@@ -41,10 +43,19 @@ public class FloorSlider : MonoBehaviour
         wobbleinator = wb;
 
         SetHeight(h);
+
+        active = true;
     }
 
     public void SetHeight(float h)
     {
         height = h;
+    }
+
+    public float GetSinTilt()
+    {
+        if (!active) return 0;
+
+        return wobbleinator.GetSinTilt();
     }
 }

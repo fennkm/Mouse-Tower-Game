@@ -8,6 +8,7 @@ public class PowerupManager : MonoBehaviour
     public const int FLOWERS = 1;
     public const int BARBS = 2;
     [SerializeField] UIManager uiManager;
+    [SerializeField] AudioManager audioManager;
     [SerializeField] MeterManager meterManager;
     [SerializeField] int[] startingPowerups = new int[3];
     private int[] powerupVals = { 0, 0, 0 };
@@ -44,16 +45,19 @@ public class PowerupManager : MonoBehaviour
                 meterManager.SetMeterVal(MeterManager.INSTABILITY, 0f);
                 meterManager.SetMeterRate(MeterManager.INSTABILITY, 0f);
                 powerupVals[TETHERS] = Mathf.Max(0, powerupVals[TETHERS] - 1);
+                audioManager.PlaySFX("TethersCreak");
                 break;
             case FLOWERS:
                 meterManager.SetMeterVal(MeterManager.STRESS, 0f);
                 meterManager.SetMeterRate(MeterManager.STRESS, 0f);
                 powerupVals[FLOWERS] = Mathf.Max(0, powerupVals[FLOWERS] - 1);
+                audioManager.PlaySFX("FlowersStrum");
                 break;
             case BARBS:
                 meterManager.SetMeterVal(MeterManager.DANGER, 0f);
                 meterManager.SetMeterRate(MeterManager.DANGER, 0f);
                 powerupVals[BARBS] = Mathf.Max(0, powerupVals[BARBS] - 1);
+                audioManager.PlaySFX("BarbsShing");
                 break;
             default:
                 throw new System.ArgumentOutOfRangeException(powerupID + " is an invalid powerup ID!");
