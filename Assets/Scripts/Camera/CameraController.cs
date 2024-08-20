@@ -27,13 +27,13 @@ public class CameraController : MonoBehaviour
 
     public void MoveToHeight(float newHeight)
     {
-        if (newHeight > transform.position.y)
-        {
+        // if (newHeight > transform.position.y)
+        // {
             if (cameraMoving)
                 StopCoroutine(moveAnimation);
-
+                
             moveAnimation = StartCoroutine(SmoothToHeight(newHeight));
-        }
+        // }
     }
 
     public void Screenshake()

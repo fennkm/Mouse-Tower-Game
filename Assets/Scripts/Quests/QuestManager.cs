@@ -60,9 +60,7 @@ public class QuestManager : MonoBehaviour
         questActive = true;
 
         uiManager.SetFloorHighlight(questFloor, true);
-        uiManager.SetQuestReward(questReward);
-
-        uiManager.SetQuestActive(true);
+        uiManager.ShowQuest(questReward);
 
         questTimer = StartCoroutine("QuestTimer");
     }
@@ -84,16 +82,16 @@ public class QuestManager : MonoBehaviour
 
     public void Reset()
     {
-        questActive = false;
+        if (questActive)
+            EndQuest();
+            
         questScore = 0f;
-
-        StopAllCoroutines();
     }
 
     private void EndQuest()
     {
         uiManager.SetFloorHighlight(questFloor, false);
-        uiManager.SetQuestActive(false);
+        uiManager.HideQuest();
 
         questActive = false;
 
@@ -114,6 +112,8 @@ public class QuestManager : MonoBehaviour
             yield return null;
 
             timer -= Time.deltaTime;
+
+            uiManager.SetQuestProgress(timer / questTime);
         }
 
         EndQuest();

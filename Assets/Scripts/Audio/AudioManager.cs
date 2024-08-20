@@ -163,6 +163,9 @@ public class AudioManager : MonoBehaviour
         else
         {
             StopAllCoroutines();
+
+            musicStartPlayer.volume = musicVolume * masterVolume;
+            musicLoopPlayer.volume = musicVolume * masterVolume;
             
             musicStartPlayer.clip = musicStart;
             musicLoopPlayer.clip = musicLoop;
@@ -181,6 +184,9 @@ public class AudioManager : MonoBehaviour
         else
         {
             StopAllCoroutines();
+
+            musicStartPlayer.volume = musicVolume * masterVolume;
+            musicLoopPlayer.volume = musicVolume * masterVolume;
 
             musicLoopPlayer.clip = menuLoop;
 

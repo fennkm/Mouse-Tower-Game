@@ -2,18 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuestBox : MonoBehaviour
 {
-    [SerializeField] GameObject questPanel;
-    [SerializeField] TextMeshProUGUI rewardLabel;
-    [SerializeField] String[] rewardStrings;
+    [SerializeField] private Animator anim;
+    [SerializeField] private Image rewardImg;
+    [SerializeField] private Image progressBar;
+    [SerializeField] private Sprite[] rewardSprites;
+    [SerializeField] private Color progressFullColor;
+    [SerializeField] private Color progressMidColor;
+    [SerializeField] private Color progressEmptyColor;
 
     // Start is called before the first frame update
     void Start()
     {
-        questPanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -24,11 +29,32 @@ public class QuestBox : MonoBehaviour
 
     public void SetActive(bool active)
     {
-        questPanel.SetActive(active);
     }
 
     public void SetRewardLabel(int id)
     {
-        rewardLabel.text = rewardStrings[id];
+        rewardImg.sprite = rewardSprites[id];
+    }
+
+    public void SetProgressBar(float fill)
+    {
+        progressBar.fillAmount = fill;
+
+        if (fill < .5f)
+            progressBar.color = Color.Lerp(progressEmptyColor, progressMidColor, fill * 2);
+        else
+            progressBar.color = Color.Lerp(progressMidColor, progressFullColor, (fill - .5f) * 2);
+    }
+
+    public void ShowReward(int id)
+    {
+        SetRewardLabel(id);
+        
+        anim.SetTrigger("Popup");
+    }
+
+    public void HideReward()
+    {
+        anim.SetTrigger("Popdown");
     }
 }

@@ -10,12 +10,14 @@ public class UIMeter : MonoBehaviour
     [SerializeField] private float jumpThreshold = 0.05f;
     [SerializeField] private float jumpSmoothing = 0.015f;
     private Slider slider;
+    private Animator shakeAnim;
     private float sliderVal;
 
     // Start is called before the first frame update
     void Start()
     {
         slider = GetComponent<Slider>();
+        shakeAnim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -25,6 +27,8 @@ public class UIMeter : MonoBehaviour
             slider.value = sliderVal;
         else
             slider.value = Mathf.Lerp(slider.value, sliderVal, jumpSmoothing);
+
+        shakeAnim.SetFloat("MeterVal", slider.value);
     }
 
     public void SetValues(float value, float rate)

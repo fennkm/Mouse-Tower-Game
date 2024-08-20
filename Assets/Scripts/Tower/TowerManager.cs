@@ -27,6 +27,7 @@ public class TowerManager : MonoBehaviour
     [SerializeField] private float floorWidth;
     [SerializeField] private float cameraOffset;
     [SerializeField] private float markerOffset;
+    [SerializeField] private int floorMilestone;
     private GameObject currentDraggable;
     private Queue<GameObject> recentFloors;
     private float currentHeight;
@@ -36,25 +37,19 @@ public class TowerManager : MonoBehaviour
 
     void Awake()
     {
+        recentFloors = new Queue<GameObject>();
+
         SetActive(false);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        recentFloors = new Queue<GameObject>();
+        ResetGame();
 
         uiManager.SetStartScreen(true);
 
         audioManager.StartMenuMusic();
-
-        floorCount = 0;
-
-        currentHeight = groundFloor.position.y;
-
-        floorMarker.transform.localPosition = groundFloor.position + (floorHeight + markerOffset)._0x0();
-
-        SetFloorMarker(false);
     }
 
     // Update is called once per frame
@@ -101,13 +96,14 @@ public class TowerManager : MonoBehaviour
         if (recentFloors.Count > 3)
             recentFloors.Dequeue();
 
-        if (floorCount % 100 == 0)
+        if (floorCount % floorMilestone == 0)
         {
             newFloor.GetComponent<FloorParticleController>().GoSparkle();
             audioManager.PlaySFX("MilestoneChime");
         }
 
-        camera.MoveToHeight(currentHeight + cameraOffset);
+        if (currentHeight + cameraOffset >= 0f)
+            camera.MoveToHeight(currentHeight + cameraOffset);
         
         floorMarker.transform.position += floorHeight._0x0();
 
@@ -206,7 +202,10 @@ public class TowerManager : MonoBehaviour
         if (currentDraggable != null)
             Destroy(currentDraggable);
 
-        uiManager.ShowDeathScreen(lossType);
+        uiManager.ShowDeathScreen(lossType, floorCount);
+
+        if (lossType == 2)
+            audioManager.PlaySFX("CatScreamHigh");
 
         audioManager.FadeMusicOut();
     }
@@ -245,7 +244,7 @@ public class TowerManager : MonoBehaviour
 
     public void StartGame()
     {
-        uiManager.ClearScreens();
+        uiManager.SetStartScreen(false);
 
         audioManager.StartGameMusic();
 
@@ -261,7 +260,6 @@ public class TowerManager : MonoBehaviour
     {
         audioManager.StartMenuMusic();
 
-        uiManager.ClearScreens();
         uiManager.SetStartScreen(true);
 
         ResetGame();

@@ -5,16 +5,14 @@ using UnityEngine;
 
 public class DeathScreen : MonoBehaviour
 {
-    [SerializeField] private GameObject[] deathLabels;
-    [SerializeField] private GameObject menu;
+    [SerializeField] private GameObject[] deathScreens;
+    [SerializeField] private TextMeshProUGUI[] altitudes;
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach (GameObject obj in deathLabels)
+        foreach (GameObject obj in deathScreens)
             obj.SetActive(false);
-
-        menu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -25,16 +23,13 @@ public class DeathScreen : MonoBehaviour
 
     public void ClearDeathScreen()
     {
-        foreach (GameObject obj in deathLabels)
+        foreach (GameObject obj in deathScreens)
             obj.SetActive(false);
-
-        menu.SetActive(false);
     }
 
-    public void SetDeathScreen(int type)
+    public void SetDeathScreen(int type, int altitude)
     {
-        deathLabels[type].SetActive(true);
-
-        menu.SetActive(true);
+        deathScreens[type].SetActive(true);
+        altitudes[type].text = altitude.ToString();
     }
 }

@@ -9,6 +9,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] GameObject[] tutorialImages;
     [SerializeField] GameObject prevArrow;
     [SerializeField] GameObject nextArrow;
+    [SerializeField] GameObject backButton;
     private bool tutorialActive;
     private int tutorialFrame;
 
@@ -46,24 +47,34 @@ public class TutorialManager : MonoBehaviour
 
         prevArrow.SetActive(false);
         nextArrow.SetActive(true);
+        backButton.SetActive(true);
 
         tutorialImages[0].SetActive(true);
 
         tutorialFrame = 0;
     }
 
-    private void EndTutorial()
+    public void EndTutorial()
     {
+        tutorialImages[tutorialFrame].SetActive(false);
+        
         tutorialActive = false;
 
         uiManager.SetStartScreen(true);
 
         prevArrow.SetActive(false);
         nextArrow.SetActive(false);
+        backButton.SetActive(false);
     }
 
     private void ShowTutorial(int frameNum)
     {
+        if (frameNum == tutorialImages.Length)
+        {
+            EndTutorial();
+            return;
+        }
+
         tutorialImages[tutorialFrame].SetActive(false);
 
         if (frameNum == 0)
@@ -71,10 +82,7 @@ public class TutorialManager : MonoBehaviour
         else
             prevArrow.SetActive(true);
         
-        if (frameNum == tutorialImages.Length)
-            EndTutorial();
-        else
-            tutorialImages[frameNum].SetActive(true);
+        tutorialImages[frameNum].SetActive(true);
 
         tutorialFrame = frameNum;
     }

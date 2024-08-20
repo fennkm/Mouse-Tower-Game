@@ -9,6 +9,10 @@ public class MeterManager : MonoBehaviour
     public const int DANGER = 2;
 
     [SerializeField] UIManager uiManager;
+    [SerializeField] AudioManager audioManager;
+
+    [SerializeField] float dangerYowl1;
+    [SerializeField] float dangerYowl2;
     private float[] meterRates = { 0f, 0f, 0f };
     private float[] meterVals = { 0f, 0f, 0f };
     private bool active;
@@ -24,6 +28,8 @@ public class MeterManager : MonoBehaviour
     {
         if (!active) return;
 
+        float[] prevVals = (float[]) meterVals.Clone();
+
         for (int i = 0; i < 3; i++)
         {
             meterVals[i] = Mathf.Clamp01(meterVals[i] + meterRates[i] * Time.deltaTime);
@@ -31,6 +37,10 @@ public class MeterManager : MonoBehaviour
             uiManager.SetMeterValues(i, meterVals[i], meterRates[i]);
         }
         
+        if (prevVals[2] < dangerYowl2 && meterVals[2] >= dangerYowl2)
+            audioManager.PlaySFX("CatScreamMed");
+        else if (prevVals[2] < dangerYowl1 && meterVals[2] >= dangerYowl1)
+            audioManager.PlaySFX("CatScreamLow");
     }
 
     public void SetMeterRate(int type, float rate)

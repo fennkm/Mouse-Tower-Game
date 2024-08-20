@@ -9,10 +9,14 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private Transform costPanel;
-    [SerializeField] private GameObject hightlight;
+    [SerializeField] private Sprite questSprite;
+    [SerializeField] private Sprite greyLabelSprite;
+    [SerializeField] private GameObject disableOverlay;
     [SerializeField] private int floorID;
     private TextMeshProUGUI[] costLabels;
+    private Sprite[] costLabelSprites = new Sprite[3];
     private Image[] costBoxes;
+    private Sprite normalSprite;
     private bool isActive;
 
     void Awake()
@@ -20,11 +24,19 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
         costLabels = costPanel.GetComponentsInChildren<TextMeshProUGUI>();
         costBoxes = costPanel.GetComponentsInChildren<Image>();
 
-        hightlight.SetActive(false);
+        for (int i = 0; i < 3; i++)
+            costLabelSprites[i] = costBoxes[i].sprite;
+
+        normalSprite = GetComponent<Image>().sprite;
 
         SetButtonActive(false);
+
         for (int i = 0; i < 3; i++)
             SetCostLabelTint(i, false);
+    }
+
+    void Start()
+    {
     }
 
     // Update is called once per frame
@@ -54,22 +66,18 @@ public class FloorButton : MonoBehaviour, IPointerDownHandler
 
     public void SetHightlight(bool active)
     {
-        hightlight.SetActive(active);
+        GetComponent<Image>().sprite = active ? questSprite : normalSprite;
     }
 
     private void SetButtonActive(bool active)
     {
         isActive = active;
 
-        Color col = GetComponent<Image>().color;
-        col.a = isActive ? 1f : .5f;
-        GetComponent<Image>().color = col;
+        disableOverlay.SetActive(!active);
     }
 
     private void SetCostLabelTint(int currencyType, bool active)
     {
-        Image box = costBoxes[currencyType];
-
-        box.color = active ? new Color(.2f, .6f ,.2f) : new Color(.3f, .3f ,.3f);
+        costBoxes[currencyType].sprite = active ? costLabelSprites[currencyType] : greyLabelSprite;
     }
 }

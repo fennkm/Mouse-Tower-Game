@@ -15,16 +15,19 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CurrencyLabel[] currencyLabels;
     [SerializeField] private PowerupLabel[] powerupLabels;
     [SerializeField] private QuestBox questBox;
+    [SerializeField] private GameUI gameUI;
     [SerializeField] private StartMenu startMenu;
     [SerializeField] private SettingsMenu settingsMenu;
     [SerializeField] private CreditsScreen creditsScreen;
     [SerializeField] private DeathScreen deathScreen;
     [SerializeField] private TextMeshProUGUI altitudeLabel;
     [SerializeField] private GameObject uiBlocker;
+    private CameraController cameraController;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        cameraController = camera.GetComponent<CameraController>();
     }
 
     // Update is called once per frame
@@ -63,14 +66,19 @@ public class UIManager : MonoBehaviour
         floorButtons[type].SetHightlight(active);
     }
 
-    public void SetQuestActive(bool active)
+    public void ShowQuest(int type)
     {
-        questBox.SetActive(active);
+        questBox.ShowReward(type);
     }
 
-    public void SetQuestReward(int type)
+    public void HideQuest()
     {
-        questBox.SetRewardLabel(type);
+        questBox.HideReward();
+    }
+
+    public void SetQuestProgress(float fill)
+    {
+        questBox.SetProgressBar(fill);
     }
 
     public void SetAltitudeLabel(int floor)
@@ -88,9 +96,9 @@ public class UIManager : MonoBehaviour
         audioManager.PlaySFX("FloorPickup");
     }
 
-    public void ShowDeathScreen(int deathType)
+    public void ShowDeathScreen(int deathType, int floor)
     {
-        deathScreen.SetDeathScreen(deathType);
+        deathScreen.SetDeathScreen(deathType, floor * 10);
     }
 
     public void ClearDeathScreen()
@@ -100,19 +108,32 @@ public class UIManager : MonoBehaviour
 
     public void SetStartScreen(bool active)
     {
+        ClearDeathScreen();
+        gameUI.SetActive(!active);
         startMenu.SetActive(active);
+        settingsMenu.SetActive(active);
+        creditsScreen.SetActive(active);
+
+        ShowStart();
+    }
+
+    public void ShowSettings()
+    {
+        cameraController.MoveToHeight(settingsMenu.transform.position.y);
+    }
+
+    public void ShowCredits()
+    {
+        cameraController.MoveToHeight(creditsScreen.transform.position.y);
+    }
+
+    public void ShowStart()
+    {
+        cameraController.MoveToHeight(startMenu.transform.position.y);
     }
 
     public void SetUIBlocker(bool active)
     {
         uiBlocker.SetActive(active);
-    }
-
-    public void ClearScreens()
-    {
-        deathScreen.ClearDeathScreen();
-        startMenu.SetActive(false);
-        settingsMenu.SetActive(false);
-        creditsScreen.SetActive(false);
     }
 }
