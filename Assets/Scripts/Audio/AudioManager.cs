@@ -124,7 +124,12 @@ public class AudioManager : MonoBehaviour
         musicLoopPlayer.volume = musicVolume * masterVolume;
 
         musicStartPlayer.Play();
-        musicLoopPlayer.PlayDelayed(musicStart.length);
+
+        #if UNITY_WEBGL
+            StartCoroutine(WebGLPlayDelayed(musicLoopPlayer, musicStart.length));
+        #else
+            musicLoopPlayer.PlayDelayed(musicStart.length);
+        #endif
 
         musicPlaying = true;
     }
@@ -171,7 +176,12 @@ public class AudioManager : MonoBehaviour
             musicLoopPlayer.clip = musicLoop;
 
             musicStartPlayer.Play();
-            musicLoopPlayer.PlayDelayed(musicStart.length);
+
+            #if UNITY_WEBGL
+                StartCoroutine(WebGLPlayDelayed(musicLoopPlayer, musicStart.length));
+            #else
+                musicLoopPlayer.PlayDelayed(musicStart.length);
+            #endif
 
             musicPlaying = true;
         }
@@ -194,5 +204,12 @@ public class AudioManager : MonoBehaviour
 
             musicPlaying = true;
         }
+    }
+
+    private IEnumerator WebGLPlayDelayed(AudioSource audio, float delay)
+    {
+        // stupid hack because coroutine timing is bad
+        yield return new WaitForSeconds(delay - 0.1f);
+        audio.Play();
     }
 }
