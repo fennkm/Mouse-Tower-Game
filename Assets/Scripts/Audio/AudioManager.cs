@@ -16,7 +16,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource musicLoopPlayer;
     private Dictionary<string, AudioClip> sfxDict;
     private float masterVolume = 1f;
-    private float musicVolume = 1f;
+    private float musicVolume = .7f;
     private float sfxVolume = 1f;
     private bool musicPlaying;
 
@@ -125,11 +125,11 @@ public class AudioManager : MonoBehaviour
 
         musicStartPlayer.Play();
 
-        #if UNITY_WEBGL
-            StartCoroutine(WebGLPlayDelayed(musicLoopPlayer, musicStart.length));
-        #else
+        // #if UNITY_WEBGL
+            // StartCoroutine(WebGLPlayDelayed(musicLoopPlayer, musicStart.length));
+        // #else
             musicLoopPlayer.PlayDelayed(musicStart.length);
-        #endif
+        // #endif
 
         musicPlaying = true;
     }

@@ -47,7 +47,7 @@ public class CameraController : MonoBehaviour
 
         while (Mathf.Abs(transform.position.y - height) > 0.01)
         {
-            SetHeight(Mathf.Lerp(transform.position.y, height, moveRate));
+            SetHeight(Mathf.Lerp(height, transform.position.y, Mathf.Exp(-moveRate * Time.deltaTime)));
             yield return null;
         }
         
