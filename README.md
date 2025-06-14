@@ -1,5 +1,7 @@
 # Mouse Tower
 
+**Play it on [itch.io](https://infiniteanimals.itch.io/mouse-tower)!**
+
 *"Us mice have crawled on the ground for far too long! Legend has it that the moon is made of cheese... enough to feed us for generations! Our best engineers have designed a tower to take our people to space - and you're going to help us build it."*
 
 These mice may not be very good builders, but that's not going to stop them. Construct a tower out of toothpicks, thread and spare buttons... but be careful it doesn't topple over!
